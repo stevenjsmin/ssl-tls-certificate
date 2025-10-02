@@ -188,6 +188,14 @@ Tomcat conf/server.xml의 기존 8080 커넥터는 유지하고, 8443 HTTPS 커�
 ```
 
 
+----
+### 10) PKCS12 vs JKS 차이
+- JKS: 전통적인 자바 전용 keystore, JDK 8까지 기본값.
+- PKCS12: 국제 표준, 여러 툴(OpenSSL, 브라우저 등)과 호환성 높음. JDK 9 이후 기본값.
+- 실무에서는 CA에서 받은 crt/key 파일을 → PKCS12 → Tomcat 순으로 쓰는 경우가 많다.
+- 하지만 레거시 코드/환경에선 여전히 .jks 를 요구할 수 있다.
+
+
 
 
 
