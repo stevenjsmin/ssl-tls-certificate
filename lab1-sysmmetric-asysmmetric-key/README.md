@@ -42,3 +42,5 @@
 
 ![img_2.png](img_2.png)
 
+HTTPS통신에서는 3-way handshake단계를 거치면 아래와 같이 Welcome Port에 의해 각각요청에대해서 추가적인 포트에 프로세스를 생성하여 할당하여(Receiver에서는 동일한 요청이 중복되지 않도록 요청된 패킷의 정보를 활용하여 관리한다) SSL통신을 준비한다.
+![img_3.png](img_3.png)
