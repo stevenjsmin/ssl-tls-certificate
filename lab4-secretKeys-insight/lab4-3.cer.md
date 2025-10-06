@@ -69,3 +69,64 @@ Windows에서 .cer, .der 확장자에 많이 쓰임
 ## 5. ✅ 요약:
 - 인증서 파일은 단순 텍스트가 아니라 공개키, 소유자/발급자 정보, 유효기간, CA 서명 등이 들어있는 전자 신분증이다.
 - PEM/DER/JKS/PKCS12 같은 형태로 저장되며, 관리의 핵심은 개인키 보호, 체인 연결, 만료 주기 관리이다.
+
+<br/><br/>
+
+# 하나의 파일에 하나이상의 인증서
+하나의 파일에 여러 개의 인증서를 넣을 수 있다.
+
+### 1. 여러 인증서가 들어갈 수 있는 이유
+- PEM 형식(.pem, .crt)은 단순히
+```shell
+        -----BEGIN CERTIFICATE-----
+        ... (Base64 인코딩된 DER 데이터)
+        -----END CERTIFICATE-----
+    
+```
+블록들의 나열입니다.
+즉, 여러 개의 -----BEGIN CERTIFICATE----- ... -----END CERTIFICATE----- 블록을 이어붙이면 한 파일 안에 여러 인증서를 보관할 수 있다.
+
+### 2. 대표적인 사용 예시
+
+#### 1. 인증서 체인(Chain File)
+- 서버 인증서(server.crt) + 중간 인증서(intermediate.crt) + 루트 인증서(root.crt)를 하나의 PEM 파일로 합쳐서 fullchain.pem 형태로 제공
+- 예:
+    ```shell
+        -----BEGIN CERTIFICATE-----
+        (Server Certificate)
+        -----END CERTIFICATE-----
+        -----BEGIN CERTIFICATE-----
+        (Intermediate CA)
+        -----END CERTIFICATE-----
+        -----BEGIN CERTIFICATE-----
+        (Root CA)
+        -----END CERTIFICATE-----
+    
+    ```
+
+
+#### CA Bundle
+- 여러 개의 CA 인증서를 묶은 파일
+- 브라우저, curl, OpenSSL 같은 클라이언트가 서버 인증서 체인을 검증할 때 사용
+- Linux에서 보통 /etc/ssl/certs/ca-bundle.crt 같은 경로에 있음
+
+#### PKCS#7 (P7B, .p7b, .p7c)
+- ASN.1 구조 안에 여러 인증서가 들어있는 컨테이너
+- 보통 체인을 한 번에 담을 때 사용됨 (Windows 환경에서 자주 씀)
+
+### 3. 주의할 점
+- <u>**순서가 중요**</u>
+    - <u>보통 서버 인증서 → 중간 CA → 루트 순서로 정렬해야 함</u>
+    - <u>순서가 틀리면 certificate verify failed 오류 발생</u>
+
+- 개인키는 별도 보관
+    - 여러 인증서를 넣는 건 가능하지만, 개인키(.key)는 따로 관리해야 함
+ 
+- 형식 구분 필요
+    - PEM 기반이라면 여러 개 가능
+    - DER 형식(.der)은 하나의 인증서만 담을 수 있음 (바이너리라 구분 불가)
+
+### ✅ 요약:
+- PEM 파일 하나에 여러 개의 인증서를 넣을 수 있다.
+- 보통 서버 인증서 + 체인 인증서를 한 파일에 넣어서 fullchain.pem 으로 사용한다.
+- 순서를 잘 맞추는 것이 핵심이다.
