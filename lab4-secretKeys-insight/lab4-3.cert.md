@@ -166,9 +166,59 @@ OpenSSL로 확인 (가장 일반적)이며 인증서 파일의 상세정보(Subj
     
 ```
 
-
 ### Java 환경 (JKS 등)에서 keytool 사용 시
 ```shell
     keytool -printcert -file mycert.cer
     
+```
+
+# 인증서 관리
+
+.cer(또는 .cert, .pem) 파일은 사실상 **Base64로 인코딩된 X.509 인증서(들)**을 담고 있는 텍스트 파일이다.
+
+- 단일 인증서인 경우, mycert.cer 파일에 하나의 인증서만 들어 있다면, 교체는 간단히 아래처럼 덮어씌우면 된다. 
+```shell
+  cp new_cert.cer mycert.cer
+```
+
+- 여러 인증서가 포함된 체인(chain) 파일인 경우
+```shell
+    -----BEGIN CERTIFICATE-----
+    (서버 인증서)
+    -----END CERTIFICATE-----
+    -----BEGIN CERTIFICATE-----
+    (중간 인증서)
+    -----END CERTIFICATE-----
+    -----BEGIN CERTIFICATE-----
+    (루트 인증서)
+    -----END CERTIFICATE-----
+
+```
+
+- 특정 인증서를 “제거”하는 방법 - 가장 직관적인 방법이다.
+  - chain.cer 파일을 텍스트 에디터(예: vi, nano, VSCode)로 엽니다.
+  - 제거하고 싶은 인증서의 블록(-----BEGIN CERTIFICATE----- ~ -----END CERTIFICATE-----)을 통째로 삭제한다.
+  - 저장 후 닫는다.
+
+#### 주의
+<U>**순서가 중요하다!. 보통 순서는 아래와 같다.**</U>
+```shell
+    [1] 서버 인증서
+    [2] 중간 인증서
+    [3] 루트 인증서
+
+```
+
+
+## KeyStore(JKS, PKCS12) 내부에서 인증서를 추가/삭제할 때
+만약 .cer 파일이 아니라 JKS(.jks) 나 PKCS12(.p12/.pfx) 내부에 들어 있는 인증서를 추가·제거하고 싶다면, keytool 명령을 사용해야 한다:
+
+**추가**
+```shell
+  keytool -importcert -alias mycert -file server.cer -keystore keystore.p12 -storetype PKCS12
+```
+
+**제거**
+```shell
+  keytool -delete -alias mycert -keystore keystore.p12 -storetype PKCS12
 ```
