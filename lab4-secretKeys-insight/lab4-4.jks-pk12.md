@@ -29,3 +29,6 @@
 PEM/CER은 단일 인증서, JKS는 Java 서버용 통합 저장소로 보면 된다.
 ![pemjks.png](../../../../Downloads/pemjks.png)
 
+
+<br/><br/><br/>
+# JKS를 이용한 인증서 관리예
