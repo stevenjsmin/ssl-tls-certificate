@@ -1,9 +1,9 @@
 # JKS and PK12
 
-| 구분  | PEM / CER |                           JKS |
-|:----| :---: |------------------------------:|
-| 형식  | 텍스트 기반 인증서 파일 | Java 전용 바이너리 키스토어 |
-| 주용도 | 공개키 인증서(및 체인) 저장 |           개인키 + 인증서 체인을 함께 보관 |
+| 구분  | PEM / CER                 | JKS                           |
+|:----|:--------------------------|:------------------------------|
+| 형식  | 텍스트 기반 인증서 파일             | Java 전용 바이너리 키스토어             |
+| 주용도 | 공개키 인증서(및 체인) 저장          | 개인키 + 인증서 체인을 함께 보관           |
 | 표준  | PKCS#7, X.509, Base64 인코딩 | Java KeyStore (Sun/Oracle 형식) |
 
 
@@ -19,11 +19,11 @@
 
 
 ### 사용 명령 예시
-| 목적  |                               PEM / CER                               | JKS |
-|:----|:---------------------------------------------------------------------:|----:|
-| 내용 보기  |                openssl x509 -in cert.pem -text -noout                 | keytool -list -v -keystore keystore.jks |
-| 서명 요청(CSR)  |           openssl req -new -key private.key -out server.csr           | keytool -certreq -alias tomcat -keystore keystore.jks |
-| 변환  | openssl pkcs12 -export -in cert.pem -inkey key.pem -out keystore.p12  | keytool -importkeystore -srckeystore keystore.p12 -srcstoretype PKCS12 -destkeystore keystore.jks |
+| 목적  | PEM / CER                                                            | JKS                                                                                               |
+|:----|:---------------------------------------------------------------------|:--------------------------------------------------------------------------------------------------|
+| 내용 보기  | openssl x509 -in cert.pem -text -noout                               | keytool -list -v -keystore keystore.jks                                                           |
+| 서명 요청(CSR)  | openssl req -new -key private.key -out server.csr                    | keytool -certreq -alias tomcat -keystore keystore.jks                                             |
+| 변환  | openssl pkcs12 -export -in cert.pem -inkey key.pem -out keystore.p12 | keytool -importkeystore -srckeystore keystore.p12 -srcstoretype PKCS12 -destkeystore keystore.jks |
 
 ### 확장 및 변환 관계
 PEM/CER은 단일 인증서, JKS는 Java 서버용 통합 저장소로 보면 된다.
