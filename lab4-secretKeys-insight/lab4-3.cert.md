@@ -1,6 +1,8 @@
 # Certification
 
-“인증서 파일 구조”는 단순히 텍스트 파일이 아니라, 암호화된 데이터 블록과 메타데이터(Subject, Issuer, 키, 서명 등) 가 표준 포맷으로 저장된 것이다.
+“인증서 파일 구조”는 단순히 텍스트 파일이 아니라, 암호화된 데이터 블록과 메타데이터(Subject, Issuer, 키, 서명 등) 가 표준 포맷으로 저장된 것이다. 인증서 파일은 보통 X.509 형식(Base64 또는 DER 인코딩) 으로 저장되어 있으며, 이를 확인할 때는 openssl 또는 keytool 명령을 사용한다.
+
+https://github.com/istio/istio/tree/master/samples/certs 에서는 테스트를 위한 여러종류의 인증서 파일들을 다운로드 받아서 테스트해볼수있다.
 
 ## 1. 인증서 파일이란?
 
@@ -130,3 +132,43 @@ Windows에서 .cer, .der 확장자에 많이 쓰임
 - PEM 파일 하나에 여러 개의 인증서를 넣을 수 있다.
 - 보통 서버 인증서 + 체인 인증서를 한 파일에 넣어서 fullchain.pem 으로 사용한다.
 - 순서를 잘 맞추는 것이 핵심이다.
+
+<br/><br/>
+# 인증서 내용확인
+OpenSSL로 확인 (가장 일반적)이며 인증서 파일의 상세정보(Subject, Issuer, 유효기간 등)를 출력할 수 있습니다.
+
+### OpenSSL
+```shell
+    # PEM(Base64) 형식의 인증서:
+    openssl x509 -in mycert.cer -text -noout
+    
+    # DER(바이너리) 형식의 인증서:
+    openssl x509 -in mycert.cer -inform der -text -noout
+    
+    # 간단하게 유효기간만 보고 싶을 때
+    openssl x509 -in mycert.cer -noout -dates
+
+```
+
+##### OpenSSL의 주요 옵션
+- **-noout** : PEM/DER 인코딩된 본문(-----BEGIN ...----- 블록)을 출력하지 말라는 뜻.
+- **-text** : 사람이 읽기 쉬운 상세 정보(텍스트 디코딩)를 출력, 예: Subject/Issuer, 유효기간, 서명 알고리즘, 확장(Key Usage, SAN) 등.
+- **-subject** : 인증서이름
+- **-issure** : 발행자
+- **-dates** : 유효기간
+                            
+```shell
+        # 요약만 보고 싶을 때:
+        openssl x509 -in cert.pem -noout -subject -issuer -dates
+
+        # Subject 형식을 깔끔하게:
+        openssl x509 -in cert.pem -noout -subject -nameopt RFC2253
+    
+```
+
+
+### Java 환경 (JKS 등)에서 keytool 사용 시
+```shell
+    keytool -printcert -file mycert.cer
+    
+```
